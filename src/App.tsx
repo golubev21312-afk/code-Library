@@ -1,13 +1,6 @@
-import { Header } from '@/components/layout/Header'
-import { SnippetsPage } from '@/pages/SnippetsPage'
+import { RouterProvider } from 'react-router-dom'
+import { router } from '@/router'
 
 export default function App() {
-  return (
-    <>
-      <Header />
-      <main className="container p-6">
-        <SnippetsPage />
-      </main>
-    </>
-  )
+  return <RouterProvider router={router} />
 }
