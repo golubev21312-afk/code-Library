@@ -1,73 +1,65 @@
-# React + TypeScript + Vite
+# Code Library
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Библиотека сниппетов и примеров кода для React + TypeScript разработки.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **React 19** + TypeScript
+- **Vite 7** — сборка
+- **Tailwind CSS v4** — стили
+- **shadcn/ui** — UI компоненты
+- **Zustand** — state management
+- **react-syntax-highlighter** — подсветка кода
 
-## React Compiler
+## Возможности
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- 🌓 Тёмная/светлая тема с автоопределением системных настроек
+- 📋 Копирование кода в буфер обмена
+- 🔍 Фильтрация сниппетов по уровню сложности
+- 🎨 Подсветка синтаксиса для TypeScript, React, CSS, HTML
 
-## Expanding the ESLint configuration
+## Разделы
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### TypeScript Utility Types
+10 сниппетов с примерами использования в React:
+- `Partial<T>`, `Required<T>`, `Pick<T, K>`, `Omit<T, K>`
+- `Record<K, V>`, `Readonly<T>`
+- `Exclude<T, U>`, `Extract<T, U>`, `NonNullable<T>`
+- `Parameters<T>`
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Разработка
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+```bash
+# Установка зависимостей
+npm install
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Запуск dev сервера
+npm run dev
+
+# Сборка
+npm run build
+
+# Линтинг
+npm run lint
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Структура проекта
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
 ```
+src/
+├── components/
+│   ├── ui/           # shadcn/ui компоненты
+│   ├── code/         # CodeBlock
+│   └── layout/       # Header
+├── data/
+│   └── snippets/     # Данные сниппетов
+├── pages/            # Страницы
+├── providers/        # ThemeProvider
+├── store/            # Zustand stores
+├── types/            # TypeScript типы
+└── lib/              # Утилиты
+```
+
+## Лицензия
+
+MIT
