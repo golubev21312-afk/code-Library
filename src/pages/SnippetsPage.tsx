@@ -1,14 +1,19 @@
 import { useState } from 'react'
-import { CodeBlock } from '@/components/code/CodeBlock'
 import { Button } from '@/components/ui/button'
-import { utilityTypesSnippets } from '@/data/snippets/typescript/utility-types'
-import type { Snippet, SkillLevel } from '@/types'
-import { cn } from '@/lib/utils'
+import { SnippetCard } from '@/components/snippets/SnippetCard'
+import { useFavorites } from '@/store/favoritesStore'
+import {
+  getSnippetsByCategory,
+  getCategories,
+  getSnippetsStats,
+} from '@/data/snippets'
+import type { SkillLevel } from '@/types'
 
-const levelColors: Record<SkillLevel, string> = {
-  beginner: 'bg-green-500/10 text-green-600 dark:text-green-400',
-  intermediate: 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400',
-  advanced: 'bg-red-500/10 text-red-600 dark:text-red-400',
+const categoryLabels: Record<string, string> = {
+  typescript: 'TypeScript',
+  react: 'React',
+  css: 'CSS',
+  patterns: 'Паттерны',
 }
 
 const levelLabels: Record<SkillLevel, string> = {
@@ -17,104 +22,95 @@ const levelLabels: Record<SkillLevel, string> = {
   advanced: 'Продвинутый',
 }
 
-function SnippetCard({ snippet }: { snippet: Snippet }) {
-  const [expanded, setExpanded] = useState(false)
-
-  return (
-    <div className="rounded-lg border bg-card p-4 space-y-3">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h3 className="font-mono text-lg font-semibold">{snippet.title}</h3>
-          <p className="text-sm text-muted-foreground mt-1">{snippet.description}</p>
-        </div>
-        <span
-          className={cn(
-            'shrink-0 rounded-full px-2 py-1 text-xs font-medium',
-            levelColors[snippet.level]
-          )}
-        >
-          {levelLabels[snippet.level]}
-        </span>
-      </div>
-
-      <div className="flex flex-wrap gap-1">
-        {snippet.tags.map((tag) => (
-          <span
-            key={tag}
-            className="rounded bg-muted px-2 py-0.5 text-xs text-muted-foreground"
-          >
-            {tag}
-          </span>
-        ))}
-      </div>
-
-      {snippet.whyRelevant2026 && (
-        <p className="text-sm text-muted-foreground border-l-2 border-primary/50 pl-3">
-          <strong>2026:</strong> {snippet.whyRelevant2026}
-        </p>
-      )}
-
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => setExpanded(!expanded)}
-        className="w-full"
-      >
-        {expanded ? 'Скрыть код' : 'Показать код'}
-      </Button>
-
-      {expanded && (
-        <CodeBlock
-          code={snippet.code}
-          language={snippet.language}
-          showLineNumbers
-        />
-      )}
-    </div>
-  )
-}
-
 export function SnippetsPage() {
-  const [filter, setFilter] = useState<SkillLevel | 'all'>('all')
+  const [levelFilter, setLevelFilter] = useState<SkillLevel | 'all'>('all')
+  const [categoryFilter, setCategoryFilter] = useState<string | 'all'>('all')
 
+  // Zustand store для избранного
+  const { count: favoritesCount } = useFavorites()
+
+  const snippetsByCategory = getSnippetsByCategory()
+  const categories = getCategories()
+  const stats = getSnippetsStats()
+
+  // Собираем все сниппеты или по выбранной категории
+  const snippetsToShow =
+    categoryFilter === 'all'
+      ? Array.from(snippetsByCategory.values()).flat()
+      : snippetsByCategory.get(categoryFilter) ?? []
+
+  // Фильтруем по уровню
   const filtered =
-    filter === 'all'
-      ? utilityTypesSnippets
-      : utilityTypesSnippets.filter((s) => s.level === filter)
+    levelFilter === 'all'
+      ? snippetsToShow
+      : snippetsToShow.filter((s) => s.level === levelFilter)
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">TypeScript Utility Types</h1>
+        <h1 className="text-2xl font-bold">Code Library</h1>
         <p className="text-muted-foreground mt-1">
-          {utilityTypesSnippets.length} сниппетов для React-разработки
+          {stats.total} сниппетов в {stats.categories} категориях
+          {favoritesCount > 0 && ` • ${favoritesCount} в избранном`}
         </p>
       </div>
 
-      <div className="flex gap-2">
+      {/* Фильтр по категориям */}
+      <div className="flex flex-wrap gap-2">
         <Button
-          variant={filter === 'all' ? 'default' : 'outline'}
+          variant={categoryFilter === 'all' ? 'default' : 'outline'}
           size="sm"
-          onClick={() => setFilter('all')}
+          onClick={() => setCategoryFilter('all')}
         >
-          Все
+          Все категории
+        </Button>
+        {categories.map((category) => (
+          <Button
+            key={category}
+            variant={categoryFilter === category ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setCategoryFilter(category)}
+          >
+            {categoryLabels[category] ?? category}{' '}
+            <span className="ml-1 text-muted-foreground">
+              ({stats.byCategory[category]})
+            </span>
+          </Button>
+        ))}
+      </div>
+
+      {/* Фильтр по уровню */}
+      <div className="flex flex-wrap gap-2">
+        <Button
+          variant={levelFilter === 'all' ? 'secondary' : 'ghost'}
+          size="sm"
+          onClick={() => setLevelFilter('all')}
+        >
+          Все уровни
         </Button>
         {(['beginner', 'intermediate', 'advanced'] as SkillLevel[]).map((level) => (
           <Button
             key={level}
-            variant={filter === level ? 'default' : 'outline'}
+            variant={levelFilter === level ? 'secondary' : 'ghost'}
             size="sm"
-            onClick={() => setFilter(level)}
+            onClick={() => setLevelFilter(level)}
           >
             {levelLabels[level]}
           </Button>
         ))}
       </div>
 
-      <div className="grid gap-4">
-        {filtered.map((snippet) => (
-          <SnippetCard key={snippet.id} snippet={snippet} />
-        ))}
+      {/* Список сниппетов */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+        {filtered.length > 0 ? (
+          filtered.map((snippet) => (
+            <SnippetCard key={snippet.id} snippet={snippet} />
+          ))
+        ) : (
+          <p className="text-muted-foreground text-center py-8 col-span-full">
+            Сниппеты не найдены
+          </p>
+        )}
       </div>
     </div>
   )
