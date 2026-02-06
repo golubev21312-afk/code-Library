@@ -4,6 +4,7 @@ import { HomePage } from '@/pages/HomePage'
 import { SnippetsPage } from '@/pages/SnippetsPage'
 import { FavoritesPage } from '@/pages/FavoritesPage'
 import { QuizPage } from '@/pages/QuizPage'
+import { SnippetPage } from '@/pages/SnippetPage'
 
 export const router = createBrowserRouter([
   {
@@ -25,6 +26,10 @@ export const router = createBrowserRouter([
       {
         path: 'quiz',
         element: <QuizPage />,
+      },
+      {
+        path: 'snippet/:id',
+        element: <SnippetPage />,
       },
     ],
   },

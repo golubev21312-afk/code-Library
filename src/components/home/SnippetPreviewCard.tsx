@@ -55,7 +55,7 @@ export function SnippetPreviewCard({ snippet, className }: SnippetPreviewCardPro
   }
 
   return (
-    <Link to="/snippets" className="block group">
+    <Link to={`/snippet/${snippet.id}`} className="block group">
       <Card
         className={cn(
           'h-full transition-all duration-300',
