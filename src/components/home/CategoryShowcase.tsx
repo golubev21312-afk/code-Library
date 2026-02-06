@@ -113,12 +113,12 @@ export function CategoryShowcase() {
         </div>
 
         <div className="text-center mt-10">
-          <Link to="/snippets">
-            <Button variant="outline" size="lg" className="gap-2">
+          <Button variant="outline" size="lg" className="gap-2" asChild>
+            <Link to="/snippets">
               Все сниппеты
               <ArrowRight className="h-4 w-4" />
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
       </div>
     </section>

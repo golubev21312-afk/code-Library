@@ -1,6 +1,6 @@
 import { HeroSection } from '@/components/home/HeroSection'
 import { CategoryShowcase } from '@/components/home/CategoryShowcase'
-import { FloatingIcons } from '@/components/animations/FloatingIcons'
+import { HeroTechIcons } from '@/components/common/TechIcons'
 import { AnimatedCard } from '@/components/animations/AnimatedCard'
 import { SnippetPreviewCard } from '@/components/home/SnippetPreviewCard'
 import { getAllSnippets } from '@/data/snippets'
@@ -17,8 +17,8 @@ export function HomePage() {
       {/* Background with gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-accent/5 animate-gradient" />
 
-      {/* Floating language icons */}
-      <FloatingIcons />
+      {/* Floating tech icons */}
+      <HeroTechIcons />
 
       {/* Hero Section */}
       <HeroSection />

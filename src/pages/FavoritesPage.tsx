@@ -61,12 +61,12 @@ export function FavoritesPage() {
               Они будут сохранены здесь для быстрого доступа.
             </p>
           </div>
-          <Link to="/snippets">
-            <Button className="gap-2">
+          <Button className="gap-2" asChild>
+            <Link to="/snippets">
               Смотреть сниппеты
               <ArrowRight className="h-4 w-4" />
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
       </div>
     )

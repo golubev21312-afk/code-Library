@@ -36,14 +36,14 @@ export function HeroSection() {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-            <Link to="/snippets">
-              <Button size="lg" className="gap-2 min-w-[180px]">
+            <Button size="lg" className="gap-2 min-w-[180px]" asChild>
+              <Link to="/snippets">
                 <Code2 className="h-5 w-5" />
                 Смотреть сниппеты
-              </Button>
-            </Link>
-            <Link to="/favorites">
-              <Button variant="outline" size="lg" className="gap-2 min-w-[180px]">
+              </Link>
+            </Button>
+            <Button variant="outline" size="lg" className="gap-2 min-w-[180px]" asChild>
+              <Link to="/favorites">
                 <Heart className="h-5 w-5" />
                 Избранное
                 {favoritesCount > 0 && (
@@ -51,8 +51,8 @@ export function HeroSection() {
                     {favoritesCount}
                   </span>
                 )}
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
         </div>
 
