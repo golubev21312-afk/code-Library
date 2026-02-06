@@ -1,15 +1,21 @@
 import { Link } from 'react-router-dom'
-import { Code2, Heart, Sparkles, BookOpen } from 'lucide-react'
+import { Code2, Heart, Sparkles, BookOpen, Tag } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { getSnippetsStats } from '@/data/snippets'
 import { useFavorites } from '@/store/favoritesStore'
+import { htmlTags } from '@/data/tags/html-tags'
+import { cssProperties } from '@/data/tags/css-properties'
+import { popularTags } from '@/data/tags/popular-tags'
 
 export function HeroSection() {
   const stats = getSnippetsStats()
   const { count: favoritesCount } = useFavorites()
 
+  const tagsCount = htmlTags.length + cssProperties.length + popularTags.length
+
   const statsItems = [
     { label: 'Сниппетов', value: stats.total, icon: Code2 },
+    { label: 'Тегов', value: tagsCount, icon: Tag },
     { label: 'Категорий', value: stats.categories, icon: BookOpen },
     { label: 'В избранном', value: favoritesCount, icon: Heart },
   ]
@@ -63,7 +69,7 @@ export function HeroSection() {
         </div>
 
         {/* Stats */}
-        <div className="mt-16 grid grid-cols-3 gap-4 md:gap-8 max-w-xl mx-auto">
+        <div className="mt-16 grid grid-cols-2 sm:grid-cols-4 gap-4 md:gap-6 max-w-2xl mx-auto">
           {statsItems.map(({ label, value, icon: Icon }) => (
             <div
               key={label}

@@ -6,6 +6,7 @@ import { FavoritesPage } from '@/pages/FavoritesPage'
 import { QuizPage } from '@/pages/QuizPage'
 import { SnippetPage } from '@/pages/SnippetPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
+import { TagsPage } from '@/pages/TagsPage'
 
 export const router = createBrowserRouter([
   {
@@ -27,6 +28,10 @@ export const router = createBrowserRouter([
       {
         path: 'quiz',
         element: <QuizPage />,
+      },
+      {
+        path: 'tags',
+        element: <TagsPage />,
       },
       {
         path: 'snippet/:id',
