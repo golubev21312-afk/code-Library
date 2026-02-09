@@ -1,8 +1,9 @@
-import { StrictMode } from 'react'
+import { StrictMode, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { registerSW } from 'virtual:pwa-register'
 import { ThemeProvider } from '@/providers/ThemeProvider'
 import { Toaster } from '@/components/ui/sonner'
+import { SplashScreen } from '@/components/splash/SplashScreen'
 import './index.css'
 import App from './App.tsx'
 
@@ -30,13 +31,22 @@ const updateSW = registerSW({
   },
 })
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
+function Root() {
+  const [showSplash, setShowSplash] = useState(true)
+
+  return (
     <ThemeProvider>
+      {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
       <div className="min-h-screen bg-background text-foreground">
         <App />
       </div>
       <Toaster />
     </ThemeProvider>
+  )
+}
+
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <Root />
   </StrictMode>,
 )
