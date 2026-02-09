@@ -80,10 +80,9 @@ export function CodeBlock({
 
   return (
     <div className={cn(codeBlockVariants({ variant }), className)}>
-      {(title || true) && (
-        <div className={headerVariants({ variant })}>
+      <div className={headerVariants({ variant })}>
           <span className="text-sm font-medium text-muted-foreground">
-            {title || normalizedLanguage}
+            {title ?? normalizedLanguage}
           </span>
           <Button
             variant="ghost"
@@ -99,7 +98,6 @@ export function CodeBlock({
             )}
           </Button>
         </div>
-      )}
       <SyntaxHighlighter
         language={normalizedLanguage}
         style={syntaxTheme}

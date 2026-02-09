@@ -53,9 +53,6 @@ const snippetModules: GlobModules = import.meta.glob<SnippetModule>(
   { eager: true }
 )
 
-// Debug: выводим загруженные модули
-console.log('[snippets] Loaded modules:', Object.keys(snippetModules))
-
 /**
  * Кэш для сниппетов по категориям
  */
@@ -73,8 +70,6 @@ export function getSnippetsByCategory(): Map<string, Snippet[]> {
 
   const result = new Map<string, Snippet[]>()
 
-  console.log('[snippets] Processing modules...')
-
   for (const [path, module] of Object.entries(snippetModules)) {
     // Пропускаем index.ts
     if (path.includes('index.ts')) continue
@@ -83,12 +78,7 @@ export function getSnippetsByCategory(): Map<string, Snippet[]> {
       const category = extractCategory(path)
       const snippets = findSnippetsArray(module)
 
-      console.log(`[snippets] ${path} -> category: ${category}, found: ${snippets.length}`)
-
-      if (snippets.length === 0) {
-        console.warn(`[snippets] No snippets found in ${path}`)
-        continue
-      }
+      if (snippets.length === 0) continue
 
       const existing = result.get(category) ?? []
       result.set(category, [...existing, ...snippets])
@@ -97,7 +87,6 @@ export function getSnippetsByCategory(): Map<string, Snippet[]> {
     }
   }
 
-  console.log('[snippets] Total categories:', result.size)
   cachedSnippetsByCategory = result
   return result
 }
