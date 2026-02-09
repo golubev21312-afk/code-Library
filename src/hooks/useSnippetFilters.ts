@@ -9,6 +9,29 @@ import {
 } from '@/data/snippets'
 import type { Snippet, SkillLevel } from '@/types'
 
+export type SortOption = 'default' | 'title-asc' | 'title-desc' | 'level-asc' | 'level-desc'
+
+const levelOrder: Record<string, number> = {
+  beginner: 0,
+  intermediate: 1,
+  advanced: 2,
+}
+
+function sortSnippets(snippets: Snippet[], sort: SortOption): Snippet[] {
+  if (sort === 'default') return snippets
+  const sorted = [...snippets]
+  switch (sort) {
+    case 'title-asc':
+      return sorted.sort((a, b) => a.title.localeCompare(b.title))
+    case 'title-desc':
+      return sorted.sort((a, b) => b.title.localeCompare(a.title))
+    case 'level-asc':
+      return sorted.sort((a, b) => levelOrder[a.level] - levelOrder[b.level])
+    case 'level-desc':
+      return sorted.sort((a, b) => levelOrder[b.level] - levelOrder[a.level])
+  }
+}
+
 interface UseSnippetFiltersOptions {
   syncWithUrl?: boolean
 }
@@ -19,6 +42,7 @@ export function useSnippetFilters(options: UseSnippetFiltersOptions = {}) {
   const [levelFilter, setLevelFilter] = useState<SkillLevel | 'all'>('all')
   const [categoryFilter, setCategoryFilter] = useState<string | 'all'>('all')
   const [searchQuery, setSearchQuery] = useState('')
+  const [sortBy, setSortBy] = useState<SortOption>('default')
 
   const debouncedSearch = useDebounce(searchQuery, 200)
 
@@ -54,11 +78,11 @@ export function useSnippetFilters(options: UseSnippetFiltersOptions = {}) {
     return snippetsByCategory.get(categoryFilter) ?? []
   }, [debouncedSearch, categoryFilter, snippetsByCategory])
 
-  // Apply level filter
-  const filtered = useMemo(
-    () => levelFilter === 'all' ? snippetsToShow : snippetsToShow.filter((s) => s.level === levelFilter),
-    [snippetsToShow, levelFilter]
-  )
+  // Apply level filter and sorting
+  const filtered = useMemo(() => {
+    const byLevel = levelFilter === 'all' ? snippetsToShow : snippetsToShow.filter((s) => s.level === levelFilter)
+    return sortSnippets(byLevel, sortBy)
+  }, [snippetsToShow, levelFilter, sortBy])
 
   return {
     searchQuery,
@@ -67,6 +91,8 @@ export function useSnippetFilters(options: UseSnippetFiltersOptions = {}) {
     setLevelFilter,
     categoryFilter,
     handleCategoryChange,
+    sortBy,
+    setSortBy,
     categories,
     stats,
     filtered,
