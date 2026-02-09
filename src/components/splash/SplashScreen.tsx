@@ -225,24 +225,64 @@ function generateExplosionParticles(count: number): ExplosionParticle[] {
 
 function createTypingSound(audioCtx: AudioContext) {
   const now = audioCtx.currentTime
+
+  // === Layer 1: Initial click (sharp noise burst) ===
+  const bufferSize = audioCtx.sampleRate * 0.015 // 15ms noise
+  const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate)
+  const data = noiseBuffer.getChannelData(0)
+  for (let i = 0; i < bufferSize; i++) {
+    data[i] = (Math.random() * 2 - 1) * 0.6
+  }
+  const noise = audioCtx.createBufferSource()
+  noise.buffer = noiseBuffer
+
+  const noiseFilter = audioCtx.createBiquadFilter()
+  noiseFilter.type = 'bandpass'
+  noiseFilter.frequency.value = 3000 + Math.random() * 2000
+  noiseFilter.Q.value = 1.5
+
+  const noiseGain = audioCtx.createGain()
+  noiseGain.gain.setValueAtTime(0.15, now)
+  noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.04)
+
+  noise.connect(noiseFilter)
+  noiseFilter.connect(noiseGain)
+  noiseGain.connect(audioCtx.destination)
+  noise.start(now)
+
+  // === Layer 2: Thock body (low resonant tone) ===
   const osc = audioCtx.createOscillator()
   osc.type = 'sine'
-  osc.frequency.setValueAtTime(800 + Math.random() * 400, now)
-  osc.frequency.exponentialRampToValueAtTime(300, now + 0.05)
+  osc.frequency.setValueAtTime(200 + Math.random() * 80, now)
+  osc.frequency.exponentialRampToValueAtTime(80, now + 0.06)
 
-  const gain = audioCtx.createGain()
-  gain.gain.setValueAtTime(0.08, now)
-  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08)
+  const oscGain = audioCtx.createGain()
+  oscGain.gain.setValueAtTime(0.12, now)
+  oscGain.gain.exponentialRampToValueAtTime(0.001, now + 0.06)
 
-  const filter = audioCtx.createBiquadFilter()
-  filter.type = 'highpass'
-  filter.frequency.value = 500
-
-  osc.connect(filter)
-  filter.connect(gain)
-  gain.connect(audioCtx.destination)
+  osc.connect(oscGain)
+  oscGain.connect(audioCtx.destination)
   osc.start(now)
-  osc.stop(now + 0.1)
+  osc.stop(now + 0.07)
+
+  // === Layer 3: High click (spring release) ===
+  const click = audioCtx.createOscillator()
+  click.type = 'square'
+  click.frequency.value = 4000 + Math.random() * 1500
+
+  const clickGain = audioCtx.createGain()
+  clickGain.gain.setValueAtTime(0.04, now)
+  clickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.012)
+
+  const clickFilter = audioCtx.createBiquadFilter()
+  clickFilter.type = 'highpass'
+  clickFilter.frequency.value = 2000
+
+  click.connect(clickFilter)
+  clickFilter.connect(clickGain)
+  clickGain.connect(audioCtx.destination)
+  click.start(now)
+  click.stop(now + 0.015)
 }
 
 function ensureAudioContext(ref: React.MutableRefObject<AudioContext | null>) {
