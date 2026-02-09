@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { LayoutGrid, Layers, Search } from 'lucide-react'
+import { usePageMeta } from '@/hooks/usePageMeta'
+import { LayoutGrid, Layers, Search, ArrowUpDown, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { SnippetCard } from '@/components/snippets/SnippetCard'
@@ -7,7 +8,7 @@ import { SnippetsByLevel } from '@/components/snippets/SnippetsByLevel'
 import { LanguageIcon } from '@/components/common/LanguageIcon'
 import { AnimatedCard } from '@/components/animations/AnimatedCard'
 import { useFavorites } from '@/store/favoritesStore'
-import { useSnippetFilters } from '@/hooks/useSnippetFilters'
+import { useSnippetFilters, type SortOption } from '@/hooks/useSnippetFilters'
 import type { SkillLevel } from '@/types'
 import { cn } from '@/lib/utils'
 
@@ -25,10 +26,23 @@ const levelLabels: Record<SkillLevel, string> = {
   advanced: 'Продвинутый',
 }
 
+const ITEMS_PER_PAGE = 20
+
+const sortLabels: Record<SortOption, string> = {
+  'default': 'По умолчанию',
+  'title-asc': 'А → Я',
+  'title-desc': 'Я → А',
+  'level-asc': 'Лёгкие сначала',
+  'level-desc': 'Сложные сначала',
+}
+
 type ViewMode = 'grid' | 'byLevel'
 
 export function SnippetsPage() {
+  usePageMeta({ title: 'Все сниппеты', description: 'Каталог 215+ сниппетов с поиском и фильтрами' })
+
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
+  const [page, setPage] = useState(1)
   const { count: favoritesCount } = useFavorites()
 
   const {
@@ -38,10 +52,20 @@ export function SnippetsPage() {
     setLevelFilter,
     categoryFilter,
     handleCategoryChange,
+    sortBy,
+    setSortBy,
     categories,
     stats,
     filtered,
   } = useSnippetFilters({ syncWithUrl: true })
+
+  // Reset page when filters change
+  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE)
+  const currentPage = Math.min(page, Math.max(totalPages, 1))
+  const paginatedSnippets = filtered.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  )
 
   return (
     <div className="container py-6">
@@ -79,15 +103,29 @@ export function SnippetsPage() {
           </div>
         </div>
 
-        {/* Search */}
-        <div className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Поиск сниппетов..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9"
-          />
+        {/* Search + Sort */}
+        <div className="flex flex-col sm:flex-row gap-3">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Поиск сниппетов..."
+              value={searchQuery}
+              onChange={(e) => { setSearchQuery(e.target.value); setPage(1) }}
+              className="pl-9"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <ArrowUpDown className="h-4 w-4 text-muted-foreground shrink-0" />
+            <select
+              value={sortBy}
+              onChange={(e) => { setSortBy(e.target.value as SortOption); setPage(1) }}
+              className="h-9 rounded-md border border-input bg-background px-3 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              {Object.entries(sortLabels).map(([value, label]) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
+          </div>
         </div>
 
         {/* Category filter */}
@@ -95,7 +133,7 @@ export function SnippetsPage() {
           <Button
             variant={categoryFilter === 'all' ? 'default' : 'outline'}
             size="sm"
-            onClick={() => handleCategoryChange('all')}
+            onClick={() => { handleCategoryChange('all'); setPage(1) }}
           >
             Все категории
           </Button>
@@ -106,7 +144,7 @@ export function SnippetsPage() {
                 key={category}
                 variant={categoryFilter === category ? 'default' : 'outline'}
                 size="sm"
-                onClick={() => handleCategoryChange(category)}
+                onClick={() => { handleCategoryChange(category); setPage(1) }}
                 className="gap-2"
               >
                 {config && <LanguageIcon language={config.language} size="sm" />}
@@ -127,7 +165,7 @@ export function SnippetsPage() {
             <Button
               variant={levelFilter === 'all' ? 'secondary' : 'ghost'}
               size="sm"
-              onClick={() => setLevelFilter('all')}
+              onClick={() => { setLevelFilter('all'); setPage(1) }}
             >
               Все уровни
             </Button>
@@ -136,7 +174,7 @@ export function SnippetsPage() {
                 key={level}
                 variant={levelFilter === level ? 'secondary' : 'ghost'}
                 size="sm"
-                onClick={() => setLevelFilter(level)}
+                onClick={() => { setLevelFilter(level); setPage(1) }}
               >
                 {levelLabels[level]}
               </Button>
@@ -146,19 +184,48 @@ export function SnippetsPage() {
 
         {/* Snippets list */}
         {viewMode === 'grid' ? (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-            {filtered.length > 0 ? (
-              filtered.map((snippet, index) => (
-                <AnimatedCard key={snippet.id} delay={index * 30}>
-                  <SnippetCard snippet={snippet} />
-                </AnimatedCard>
-              ))
-            ) : (
-              <p className="text-muted-foreground text-center py-8 col-span-full">
-                Сниппеты не найдены
-              </p>
+          <>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+              {paginatedSnippets.length > 0 ? (
+                paginatedSnippets.map((snippet, index) => (
+                  <AnimatedCard key={snippet.id} delay={index * 30}>
+                    <SnippetCard snippet={snippet} />
+                  </AnimatedCard>
+                ))
+              ) : (
+                <p className="text-muted-foreground text-center py-8 col-span-full">
+                  Сниппеты не найдены
+                </p>
+              )}
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-2 pt-4">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  disabled={currentPage <= 1}
+                  onClick={() => { setPage(currentPage - 1); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+                  aria-label="Предыдущая страница"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <span className="text-sm text-muted-foreground px-3">
+                  {currentPage} / {totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  disabled={currentPage >= totalPages}
+                  onClick={() => { setPage(currentPage + 1); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+                  aria-label="Следующая страница"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
             )}
-          </div>
+          </>
         ) : (
           <SnippetsByLevel snippets={filtered} />
         )}

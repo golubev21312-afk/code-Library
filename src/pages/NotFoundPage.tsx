@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { usePageMeta } from '@/hooks/usePageMeta'
 import { Link } from 'react-router-dom'
 import { Home, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -13,6 +14,8 @@ const funMessages = [
 ]
 
 export function NotFoundPage() {
+  usePageMeta({ title: '404 — Страница не найдена' })
+
   const [imageId, setImageId] = useState(() => Math.floor(Math.random() * 1000))
   const [message] = useState(() => funMessages[Math.floor(Math.random() * funMessages.length)])
 

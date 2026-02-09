@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { usePageMeta } from '@/hooks/usePageMeta'
 import { HeroSection } from '@/components/home/HeroSection'
 import { CategoryShowcase } from '@/components/home/CategoryShowcase'
 import { ImmersiveTechIcons } from '@/components/animations/ImmersiveTechIcons'
@@ -7,6 +8,11 @@ import { FeaturedCarousel } from '@/components/home/FeaturedCarousel'
 import { getAllSnippets } from '@/data/snippets'
 
 export function HomePage() {
+  usePageMeta({
+    title: 'Главная',
+    description: 'Библиотека 215+ сниппетов для React, TypeScript, JavaScript, CSS и HTML',
+  })
+
   const featuredSnippets = useMemo(() => {
     return getAllSnippets().filter((s) => s.whyRelevant2026).slice(0, 6)
   }, [])

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { usePageMeta } from '@/hooks/usePageMeta'
 import { Code2, Palette, ChevronDown, Copy, Check, Star, Lightbulb } from 'lucide-react'
 import { toast } from 'sonner'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -260,6 +261,8 @@ function CssPropertyCard({ property, description, example }: CssProperty) {
 }
 
 export function TagsPage() {
+  usePageMeta({ title: 'Теги', description: 'Справочник HTML-тегов и CSS-свойств с примерами' })
+
   const [htmlFilter, setHtmlFilter] = useState<HtmlTag['category'] | 'all'>('all')
   const [cssFilter, setCssFilter] = useState<CssProperty['category'] | 'all'>('all')
   const [popularFilter, setPopularFilter] = useState<'all' | 'html' | 'css'>('all')

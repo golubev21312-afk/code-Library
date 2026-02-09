@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { usePageMeta } from '@/hooks/usePageMeta'
 import { Link } from 'react-router-dom'
 import { Heart, Trash2, ArrowRight, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -17,6 +18,8 @@ const levelLabels: Record<SkillLevel, string> = {
 }
 
 export function FavoritesPage() {
+  usePageMeta({ title: 'Избранное', description: 'Ваши сохранённые сниппеты' })
+
   const { favoriteIds, clearFavorites, count } = useFavorites()
 
   const favoriteSnippets = useMemo(() => {

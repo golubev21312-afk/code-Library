@@ -1,4 +1,5 @@
 import { useParams, Link } from 'react-router-dom'
+import { usePageMeta } from '@/hooks/usePageMeta'
 import { ArrowLeft, Home } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { SnippetCard } from '@/components/snippets/SnippetCard'
@@ -8,6 +9,11 @@ import { AnimatedCard } from '@/components/animations/AnimatedCard'
 export function SnippetPage() {
   const { id } = useParams<{ id: string }>()
   const snippet = id ? getSnippetById(id) : undefined
+
+  usePageMeta({
+    title: snippet?.title ?? 'Сниппет не найден',
+    description: snippet?.description,
+  })
 
   if (!snippet) {
     return (

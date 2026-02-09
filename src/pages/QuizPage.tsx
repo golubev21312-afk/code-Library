@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import { usePageMeta } from '@/hooks/usePageMeta'
 import { Link } from 'react-router-dom'
 import { Trophy, RotateCcw, ArrowRight, Check, X, Code2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -65,6 +66,8 @@ function generateQuizQuestions(count: number): QuizQuestion[] {
 }
 
 export function QuizPage() {
+  usePageMeta({ title: 'Квиз', description: 'Угадай что делает код — проверь свои знания' })
+
   const [questions, setQuestions] = useState<QuizQuestion[]>(() => generateQuizQuestions(10))
   const [currentIndex, setCurrentIndex] = useState(0)
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
