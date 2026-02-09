@@ -291,6 +291,61 @@
   animation: splash-fadeout 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
+/* === Sparks === */
+@keyframes splash-spark-burst {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(var(--spark-angle)) translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(var(--spark-angle)) translateY(calc(-1 * var(--spark-distance))) scale(0);
+  }
+}
+
+.splash-spark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 50%;
+  z-index: 5;
+  animation: splash-spark-burst ease-out forwards;
+  box-shadow: 0 0 6px 2px currentColor;
+}
+
+/* === Background particles === */
+@keyframes splash-particle-float {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  25% { transform: translateY(-30px) translateX(15px); }
+  50% { transform: translateY(-10px) translateX(-10px); }
+  75% { transform: translateY(-40px) translateX(5px); }
+}
+
+.splash-bg-particle {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(97, 218, 251, 0.6);
+  animation: splash-particle-float ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* === Progress bar === */
+.splash-progress-bar {
+  background: linear-gradient(90deg, #58a6ff, #a78bfa, #f472b6);
+  border-radius: 0 2px 2px 0;
+}
+
+/* === Skip hint === */
+@keyframes splash-skip-fade-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.splash-skip-hint {
+  opacity: 0;
+  animation: splash-skip-fade-in 0.5s ease 1.5s forwards;
+}
+
 /* === Syntax highlighting === */
 .splash-kw { color: #ff7b72; }
 .splash-var { color: #79c0ff; }
@@ -321,6 +376,15 @@
   .splash-phase-fadeout {
     animation: none;
     opacity: 0;
+  }
+  .splash-bg-particle,
+  .splash-spark {
+    animation: none;
+    opacity: 0;
+  }
+  .splash-skip-hint {
+    animation: none;
+    opacity: 1;
   }
 }
 

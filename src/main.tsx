@@ -31,8 +31,16 @@ const updateSW = registerSW({
   },
 })
 
+function shouldShowSplash(): boolean {
+  try {
+    return !sessionStorage.getItem('splash-shown')
+  } catch {
+    return true
+  }
+}
+
 function Root() {
-  const [showSplash, setShowSplash] = useState(true)
+  const [showSplash, setShowSplash] = useState(shouldShowSplash)
 
   return (
     <ThemeProvider>
