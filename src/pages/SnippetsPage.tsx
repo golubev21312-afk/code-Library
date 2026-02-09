@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { LayoutGrid, Layers, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -42,9 +42,9 @@ export function SnippetsPage() {
 
   const { count: favoritesCount } = useFavorites()
 
-  const snippetsByCategory = getSnippetsByCategory()
-  const categories = getCategories()
-  const stats = getSnippetsStats()
+  const snippetsByCategory = useMemo(() => getSnippetsByCategory(), [])
+  const categories = useMemo(() => getCategories(), [])
+  const stats = useMemo(() => getSnippetsStats(), [])
 
   // Read category from URL on mount
   useEffect(() => {
@@ -66,17 +66,17 @@ export function SnippetsPage() {
   }
 
   // Get snippets based on search or filters
-  const snippetsToShow = searchQuery.trim()
-    ? searchSnippets(searchQuery)
-    : categoryFilter === 'all'
-      ? Array.from(snippetsByCategory.values()).flat()
-      : snippetsByCategory.get(categoryFilter) ?? []
+  const snippetsToShow = useMemo(() => {
+    if (searchQuery.trim()) return searchSnippets(searchQuery)
+    if (categoryFilter === 'all') return Array.from(snippetsByCategory.values()).flat()
+    return snippetsByCategory.get(categoryFilter) ?? []
+  }, [searchQuery, categoryFilter, snippetsByCategory])
 
   // Apply level filter
-  const filtered =
-    levelFilter === 'all'
-      ? snippetsToShow
-      : snippetsToShow.filter((s) => s.level === levelFilter)
+  const filtered = useMemo(
+    () => levelFilter === 'all' ? snippetsToShow : snippetsToShow.filter((s) => s.level === levelFilter),
+    [snippetsToShow, levelFilter]
+  )
 
   return (
     <div className="container py-6">

@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { HeroSection } from '@/components/home/HeroSection'
 import { CategoryShowcase } from '@/components/home/CategoryShowcase'
 import { ImmersiveTechIcons } from '@/components/animations/ImmersiveTechIcons'
@@ -6,10 +7,9 @@ import { FeaturedCarousel } from '@/components/home/FeaturedCarousel'
 import { getAllSnippets } from '@/data/snippets'
 
 export function HomePage() {
-  const allSnippets = getAllSnippets()
-  const featuredSnippets = allSnippets
-    .filter((s) => s.whyRelevant2026)
-    .slice(0, 6)
+  const featuredSnippets = useMemo(() => {
+    return getAllSnippets().filter((s) => s.whyRelevant2026).slice(0, 6)
+  }, [])
 
   return (
     <div className="relative min-h-screen overflow-hidden">

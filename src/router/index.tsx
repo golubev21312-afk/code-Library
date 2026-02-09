@@ -1,12 +1,22 @@
+import { lazy, Suspense } from 'react'
 import { createBrowserRouter } from 'react-router-dom'
 import { RootLayout } from '@/components/layout/RootLayout'
 import { HomePage } from '@/pages/HomePage'
-import { SnippetsPage } from '@/pages/SnippetsPage'
-import { FavoritesPage } from '@/pages/FavoritesPage'
-import { QuizPage } from '@/pages/QuizPage'
-import { SnippetPage } from '@/pages/SnippetPage'
-import { NotFoundPage } from '@/pages/NotFoundPage'
-import { TagsPage } from '@/pages/TagsPage'
+
+const SnippetsPage = lazy(() => import('@/pages/SnippetsPage').then((m) => ({ default: m.SnippetsPage })))
+const FavoritesPage = lazy(() => import('@/pages/FavoritesPage').then((m) => ({ default: m.FavoritesPage })))
+const QuizPage = lazy(() => import('@/pages/QuizPage').then((m) => ({ default: m.QuizPage })))
+const TagsPage = lazy(() => import('@/pages/TagsPage').then((m) => ({ default: m.TagsPage })))
+const SnippetPage = lazy(() => import('@/pages/SnippetPage').then((m) => ({ default: m.SnippetPage })))
+const NotFoundPage = lazy(() => import('@/pages/NotFoundPage').then((m) => ({ default: m.NotFoundPage })))
+
+function LazyPage({ children }: { children: React.ReactNode }) {
+  return (
+    <Suspense fallback={<div className="container py-6 text-center text-muted-foreground">Загрузка...</div>}>
+      {children}
+    </Suspense>
+  )
+}
 
 export const router = createBrowserRouter([
   {
@@ -19,27 +29,27 @@ export const router = createBrowserRouter([
       },
       {
         path: 'snippets',
-        element: <SnippetsPage />,
+        element: <LazyPage><SnippetsPage /></LazyPage>,
       },
       {
         path: 'favorites',
-        element: <FavoritesPage />,
+        element: <LazyPage><FavoritesPage /></LazyPage>,
       },
       {
         path: 'quiz',
-        element: <QuizPage />,
+        element: <LazyPage><QuizPage /></LazyPage>,
       },
       {
         path: 'tags',
-        element: <TagsPage />,
+        element: <LazyPage><TagsPage /></LazyPage>,
       },
       {
         path: 'snippet/:id',
-        element: <SnippetPage />,
+        element: <LazyPage><SnippetPage /></LazyPage>,
       },
       {
         path: '*',
-        element: <NotFoundPage />,
+        element: <LazyPage><NotFoundPage /></LazyPage>,
       },
     ],
   },

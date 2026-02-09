@@ -1,11 +1,11 @@
-import { useState } from 'react'
+import { useState, memo } from 'react'
 import { Heart } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { LanguageIcon } from '@/components/common/LanguageIcon'
-import { useFavoritesStore } from '@/store/favoritesStore'
+import { useFavoritesStore, selectIsFavorite } from '@/store/favoritesStore'
 import { cn } from '@/lib/utils'
 import type { Snippet, SkillLevel } from '@/types'
 import { toast } from 'sonner'
@@ -38,9 +38,9 @@ interface SnippetPreviewCardProps {
   className?: string
 }
 
-export function SnippetPreviewCard({ snippet, className }: SnippetPreviewCardProps) {
+export const SnippetPreviewCard = memo(function SnippetPreviewCard({ snippet, className }: SnippetPreviewCardProps) {
   const [heartAnim, setHeartAnim] = useState(false)
-  const isFavorite = useFavoritesStore((state) => state.favoriteIds.includes(snippet.id))
+  const isFavorite = useFavoritesStore(selectIsFavorite(snippet.id))
   const toggleFavorite = useFavoritesStore((state) => state.toggleFavorite)
 
   const handleFavorite = (e: React.MouseEvent) => {
@@ -129,4 +129,4 @@ export function SnippetPreviewCard({ snippet, className }: SnippetPreviewCardPro
       </Card>
     </Link>
   )
-}
+})

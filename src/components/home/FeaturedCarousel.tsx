@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { SnippetPreviewCard } from '@/components/home/SnippetPreviewCard'
 import type { Snippet } from '@/types'
 
@@ -6,8 +7,8 @@ interface FeaturedCarouselProps {
 }
 
 export function FeaturedCarousel({ snippets }: FeaturedCarouselProps) {
-  // Дублируем сниппеты для бесконечной карусели
-  const duplicatedSnippets = [...snippets, ...snippets]
+  // Дублируем сниппеты для бесконечной карусели (мемоизировано)
+  const duplicatedSnippets = useMemo(() => [...snippets, ...snippets], [snippets])
 
   return (
     <div className="carousel-container py-4">

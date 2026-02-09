@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, memo } from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { Heart, Share2, Copy, Check, Code2, FileText, Sparkles, Eye } from 'lucide-react'
 import { toast } from 'sonner'
@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { CodeBlock } from '@/components/code/CodeBlock'
-import { useFavoritesStore } from '@/store/favoritesStore'
+import { useFavoritesStore, selectIsFavorite } from '@/store/favoritesStore'
 import { cn } from '@/lib/utils'
 import type { Snippet, SkillLevel } from '@/types'
 
@@ -69,7 +69,7 @@ interface SnippetCardProps extends VariantProps<typeof cardVariants> {
 
 // === Component ===
 
-export function SnippetCard({
+export const SnippetCard = memo(function SnippetCard({
   snippet,
   variant,
   interactive,
@@ -80,7 +80,7 @@ export function SnippetCard({
   const [heartAnim, setHeartAnim] = useState(false)
 
   // Zustand store для избранного
-  const isFavorite = useFavoritesStore((state) => state.favoriteIds.includes(snippet.id))
+  const isFavorite = useFavoritesStore(selectIsFavorite(snippet.id))
   const toggleFavorite = useFavoritesStore((state) => state.toggleFavorite)
 
   // Определяем доступные табы
@@ -311,7 +311,7 @@ export function SnippetCard({
       </CardContent>
     </Card>
   )
-}
+})
 
 // === Exports ===
 
