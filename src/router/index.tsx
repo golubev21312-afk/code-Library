@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react'
 import { createBrowserRouter } from 'react-router-dom'
 import { RootLayout } from '@/components/layout/RootLayout'
+import { ErrorBoundary } from '@/components/common/ErrorBoundary'
 import { HomePage } from '@/pages/HomePage'
 
 const SnippetsPage = lazy(() => import('@/pages/SnippetsPage').then((m) => ({ default: m.SnippetsPage })))
@@ -10,11 +11,13 @@ const TagsPage = lazy(() => import('@/pages/TagsPage').then((m) => ({ default: m
 const SnippetPage = lazy(() => import('@/pages/SnippetPage').then((m) => ({ default: m.SnippetPage })))
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage').then((m) => ({ default: m.NotFoundPage })))
 
-function LazyPage({ children }: { children: React.ReactNode }) {
+function PageWrapper({ children }: { children: React.ReactNode }) {
   return (
-    <Suspense fallback={<div className="container py-6 text-center text-muted-foreground">Загрузка...</div>}>
-      {children}
-    </Suspense>
+    <ErrorBoundary>
+      <Suspense fallback={<div className="container py-6 text-center text-muted-foreground">Загрузка...</div>}>
+        {children}
+      </Suspense>
+    </ErrorBoundary>
   )
 }
 
@@ -25,31 +28,31 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <HomePage />,
+        element: <ErrorBoundary><HomePage /></ErrorBoundary>,
       },
       {
         path: 'snippets',
-        element: <LazyPage><SnippetsPage /></LazyPage>,
+        element: <PageWrapper><SnippetsPage /></PageWrapper>,
       },
       {
         path: 'favorites',
-        element: <LazyPage><FavoritesPage /></LazyPage>,
+        element: <PageWrapper><FavoritesPage /></PageWrapper>,
       },
       {
         path: 'quiz',
-        element: <LazyPage><QuizPage /></LazyPage>,
+        element: <PageWrapper><QuizPage /></PageWrapper>,
       },
       {
         path: 'tags',
-        element: <LazyPage><TagsPage /></LazyPage>,
+        element: <PageWrapper><TagsPage /></PageWrapper>,
       },
       {
         path: 'snippet/:id',
-        element: <LazyPage><SnippetPage /></LazyPage>,
+        element: <PageWrapper><SnippetPage /></PageWrapper>,
       },
       {
         path: '*',
-        element: <LazyPage><NotFoundPage /></LazyPage>,
+        element: <PageWrapper><NotFoundPage /></PageWrapper>,
       },
     ],
   },

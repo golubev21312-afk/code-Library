@@ -24,6 +24,8 @@ function shuffleArray<T>(array: T[]): T[] {
   return result
 }
 
+const MIN_SNIPPETS_FOR_QUIZ = 4
+
 function generateQuizQuestions(count: number): QuizQuestion[] {
   const allSnippets = getAllSnippets()
 
@@ -32,14 +34,20 @@ function generateQuizQuestions(count: number): QuizQuestion[] {
     s => s.code.length > 50 && s.code.length < 800 && s.description.length > 20
   )
 
+  // Нужно минимум 4 сниппета чтобы собрать 1 вопрос с 4 вариантами
+  if (validSnippets.length < MIN_SNIPPETS_FOR_QUIZ) return []
+
+  // Не можем сгенерировать больше вопросов чем есть сниппетов
+  const actualCount = Math.min(count, validSnippets.length)
+
   // Перемешиваем и берём нужное количество
-  const selectedSnippets = shuffleArray(validSnippets).slice(0, count)
+  const selectedSnippets = shuffleArray(validSnippets).slice(0, actualCount)
 
   return selectedSnippets.map(snippet => {
     // Берём 3 случайных неправильных ответа из других сниппетов
     const otherDescriptions = shuffleArray(
-      allSnippets
-        .filter(s => s.id !== snippet.id && s.description.length > 20)
+      validSnippets
+        .filter(s => s.id !== snippet.id)
         .map(s => s.description)
     ).slice(0, 3)
 
@@ -65,6 +73,7 @@ export function QuizPage() {
 
   const currentQuestion = questions[currentIndex]
   const isFinished = currentIndex >= questions.length
+  const isEmpty = questions.length === 0
 
   const handleAnswer = (index: number) => {
     if (selectedAnswer !== null) return
@@ -86,6 +95,30 @@ export function QuizPage() {
     setSelectedAnswer(null)
     setScore(0)
     setAnswered([])
+  }
+
+  if (isEmpty) {
+    return (
+      <div className="container py-16">
+        <div className="max-w-md mx-auto text-center space-y-6">
+          <div className="w-24 h-24 mx-auto rounded-full bg-muted flex items-center justify-center">
+            <Code2 className="h-12 w-12 text-muted-foreground" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold">Недостаточно сниппетов</h1>
+            <p className="text-muted-foreground mt-2">
+              Для квиза нужно минимум {MIN_SNIPPETS_FOR_QUIZ} сниппета с примерами кода.
+            </p>
+          </div>
+          <Button variant="outline" asChild>
+            <Link to="/snippets" className="gap-2">
+              <Code2 className="h-4 w-4" />
+              К сниппетам
+            </Link>
+          </Button>
+        </div>
+      </div>
+    )
   }
 
   if (isFinished) {
