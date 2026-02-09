@@ -218,6 +218,59 @@
    SPLASH SCREEN
    ======================================== */
 
+/* === Custom cursor === */
+.splash-custom-cursor {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='4' fill='none' stroke='%2358a6ff' stroke-width='2'/%3E%3Ccircle cx='12' cy='12' r='1' fill='%2358a6ff'/%3E%3Cline x1='12' y1='2' x2='12' y2='8' stroke='%2358a6ff' stroke-width='1' opacity='0.5'/%3E%3Cline x1='12' y1='16' x2='12' y2='22' stroke='%2358a6ff' stroke-width='1' opacity='0.5'/%3E%3Cline x1='2' y1='12' x2='8' y2='12' stroke='%2358a6ff' stroke-width='1' opacity='0.5'/%3E%3Cline x1='16' y1='12' x2='22' y2='12' stroke='%2358a6ff' stroke-width='1' opacity='0.5'/%3E%3C/svg%3E") 12 12, crosshair;
+}
+
+.splash-custom-cursor button {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='6' fill='%2358a6ff' fill-opacity='0.3'/%3E%3Ccircle cx='12' cy='12' r='3' fill='%2358a6ff'/%3E%3C/svg%3E") 12 12, pointer;
+}
+
+/* === Scanlines === */
+.splash-scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 40;
+  mix-blend-mode: multiply;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0, 0, 0, 0.15) 3px,
+    rgba(0, 0, 0, 0.15) 4px
+  );
+}
+
+/* === Matrix rain === */
+@keyframes splash-matrix-fall {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
+
+.splash-matrix-column {
+  position: absolute;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  color: rgba(0, 255, 0, 0.6);
+  font-family: monospace;
+  pointer-events: none;
+  animation: splash-matrix-fall linear infinite;
+  white-space: nowrap;
+  text-shadow: 0 0 8px rgba(0, 255, 0, 0.4);
+}
+
+.splash-matrix-head {
+  color: rgba(255, 255, 255, 0.9);
+}
+
 /* === Icon animations === */
 @keyframes splash-icon-in {
   0% {
@@ -271,6 +324,61 @@
   51%, 100% { opacity: 0; }
 }
 
+/* === Title phase === */
+@keyframes splash-title-in {
+  0% { opacity: 0; transform: scale(0.8) translateY(20px); filter: blur(10px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+}
+
+@keyframes splash-title-line-expand {
+  0% { width: 0; opacity: 0; }
+  100% { width: 120px; opacity: 1; }
+}
+
+@keyframes splash-title-sub-in {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.splash-title-in {
+  animation: splash-title-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.splash-title-text {
+  background: linear-gradient(90deg, #58a6ff 0%, #a78bfa 30%, #f472b6 60%, #58a6ff 100%);
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: text-shimmer 3s linear infinite;
+  filter: drop-shadow(0 0 30px rgba(88, 166, 255, 0.3));
+}
+
+.splash-title-line {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #58a6ff, #a78bfa, #f472b6, transparent);
+  border-radius: 999px;
+  animation: splash-title-line-expand 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+  width: 0;
+  opacity: 0;
+}
+
+.splash-title-sub {
+  opacity: 0;
+  animation: splash-title-sub-in 0.5s ease 0.5s forwards;
+}
+
+/* === Boot sequence === */
+@keyframes splash-boot-line-in {
+  0% { opacity: 0; transform: translateX(-10px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+.splash-boot-line {
+  animation: splash-boot-line-in 0.3s ease forwards;
+}
+
+/* === Editor / cursor === */
 .splash-editor-in {
   animation: splash-editor-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -289,6 +397,61 @@
 
 .splash-phase-fadeout {
   animation: splash-fadeout 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* === Glitch effect === */
+@keyframes splash-glitch {
+  0% { transform: translate(0); }
+  15% { transform: translate(-3px, 2px); filter: hue-rotate(90deg); clip-path: inset(30% 0 40% 0); }
+  30% { transform: translate(3px, -1px); clip-path: inset(50% 0 20% 0); }
+  45% { transform: translate(-2px, -2px); filter: hue-rotate(-90deg); clip-path: inset(10% 0 60% 0); }
+  60% { transform: translate(2px, 1px); clip-path: inset(40% 0 30% 0); }
+  75% { transform: translate(-1px, 0); filter: hue-rotate(45deg); }
+  100% { transform: translate(0); filter: none; clip-path: none; }
+}
+
+.splash-glitch {
+  animation: splash-glitch 0.25s ease-in-out;
+}
+
+/* === Explosion particles === */
+@keyframes splash-explosion-burst {
+  0% {
+    opacity: 1;
+    transform: rotate(var(--exp-angle)) translateY(0) scale(1);
+  }
+  60% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(var(--exp-angle)) translateY(calc(-1 * var(--exp-distance))) scale(0);
+  }
+}
+
+.splash-explosion-particle {
+  position: absolute;
+  border-radius: 50%;
+  animation: splash-explosion-burst ease-out forwards;
+}
+
+/* === Konami easter egg === */
+@keyframes splash-konami-badge-in {
+  0% { opacity: 0; transform: translateX(-50%) translateY(-20px) scale(0.8); }
+  100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+}
+
+@keyframes splash-konami-rainbow {
+  0% { filter: hue-rotate(0deg); }
+  100% { filter: hue-rotate(360deg); }
+}
+
+.splash-konami-badge {
+  animation: splash-konami-badge-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.splash-konami-rainbow {
+  animation: splash-konami-rainbow 1s linear infinite;
 }
 
 /* === Sparks === */
@@ -370,7 +533,15 @@
   }
   .splash-icon-glow,
   .splash-icons-gather,
-  .splash-editor-in {
+  .splash-editor-in,
+  .splash-title-in,
+  .splash-title-text,
+  .splash-title-line,
+  .splash-title-sub,
+  .splash-boot-line,
+  .splash-glitch,
+  .splash-konami-badge,
+  .splash-konami-rainbow {
     animation: none;
   }
   .splash-phase-fadeout {
@@ -378,12 +549,21 @@
     opacity: 0;
   }
   .splash-bg-particle,
-  .splash-spark {
+  .splash-spark,
+  .splash-matrix-column,
+  .splash-explosion-particle {
     animation: none;
     opacity: 0;
   }
   .splash-skip-hint {
     animation: none;
+    opacity: 1;
+  }
+  .splash-title-line {
+    width: 120px;
+    opacity: 1;
+  }
+  .splash-title-sub {
     opacity: 1;
   }
 }
