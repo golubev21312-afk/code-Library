@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { Trophy, RotateCcw, ArrowRight, Check, X, Code2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -89,6 +89,21 @@ export function QuizPage() {
     setCurrentIndex(i => i + 1)
   }
 
+  const handleOptionKeyDown = useCallback((e: React.KeyboardEvent, index: number, total: number) => {
+    let targetIndex: number | null = null
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+      e.preventDefault()
+      targetIndex = (index + 1) % total
+    } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+      e.preventDefault()
+      targetIndex = (index - 1 + total) % total
+    }
+    if (targetIndex !== null) {
+      const buttons = (e.currentTarget as HTMLElement).parentElement?.querySelectorAll<HTMLButtonElement>('[role="radio"]')
+      buttons?.[targetIndex]?.focus()
+    }
+  }, [])
+
   const handleRestart = () => {
     setQuestions(generateQuizQuestions(10))
     setCurrentIndex(0)
@@ -177,7 +192,7 @@ export function QuizPage() {
             <span className="text-sm text-muted-foreground">
               {currentIndex + 1} / {questions.length}
             </span>
-            <div className="flex gap-1">
+            <div className="flex gap-1" role="status" aria-label={`Отвечено ${answered.length} из ${questions.length}`}>
               {answered.map((correct, i) => (
                 <div
                   key={i}
@@ -185,10 +200,11 @@ export function QuizPage() {
                     'w-2 h-2 rounded-full',
                     correct ? 'bg-green-500' : 'bg-red-500'
                   )}
+                  aria-hidden="true"
                 />
               ))}
               {Array.from({ length: questions.length - answered.length }).map((_, i) => (
-                <div key={`empty-${i}`} className="w-2 h-2 rounded-full bg-muted" />
+                <div key={`empty-${i}`} className="w-2 h-2 rounded-full bg-muted" aria-hidden="true" />
               ))}
             </div>
           </div>
@@ -216,7 +232,7 @@ export function QuizPage() {
             <p className="font-medium text-lg">Что делает этот код?</p>
 
             {/* Options */}
-            <div className="space-y-2">
+            <div className="space-y-2" role="radiogroup" aria-label="Варианты ответа">
               {currentQuestion.options.map((option, index) => {
                 const isSelected = selectedAnswer === index
                 const isCorrect = index === currentQuestion.correctIndex
@@ -226,11 +242,16 @@ export function QuizPage() {
                 return (
                   <button
                     key={index}
+                    role="radio"
+                    aria-checked={isSelected}
+                    tabIndex={index === 0 || isSelected ? 0 : -1}
                     onClick={() => handleAnswer(index)}
+                    onKeyDown={(e) => handleOptionKeyDown(e, index, currentQuestion.options.length)}
                     disabled={selectedAnswer !== null}
                     className={cn(
                       'w-full p-3 rounded-lg border text-left transition-all text-sm',
                       'hover:border-primary/50 hover:bg-muted/50',
+                      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
                       'disabled:cursor-default',
                       selectedAnswer === null && 'hover:scale-[1.01]',
                       showCorrect && 'border-green-500 bg-green-500/10',
@@ -240,8 +261,8 @@ export function QuizPage() {
                   >
                     <div className="flex items-start justify-between gap-2">
                       <span className="line-clamp-3">{option}</span>
-                      {showCorrect && <Check className="h-5 w-5 text-green-500 shrink-0" />}
-                      {showWrong && <X className="h-5 w-5 text-red-500 shrink-0" />}
+                      {showCorrect && <Check className="h-5 w-5 text-green-500 shrink-0" aria-label="Правильный ответ" />}
+                      {showWrong && <X className="h-5 w-5 text-red-500 shrink-0" aria-label="Неправильный ответ" />}
                     </div>
                   </button>
                 )

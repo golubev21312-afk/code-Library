@@ -97,6 +97,7 @@ function BreakableLogo({
     <button
       onClick={handleClick}
       title={label}
+      aria-label={label}
       className={cn(
         'absolute logo-3d-container pointer-events-auto',
         'opacity-70 dark:opacity-80 hover:opacity-100',

@@ -81,7 +81,7 @@ export function Header() {
             Code Library
           </Link>
 
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden md:flex items-center gap-1" aria-label="Основная навигация">
             {navLinks.map(({ to, label, icon: Icon }) => {
               const isActive = location.pathname === to
               const isFavorites = to === '/favorites'
@@ -112,19 +112,21 @@ export function Header() {
 
         <div className="flex items-center gap-2">
           {/* Mobile navigation */}
-          <nav className="flex md:hidden items-center gap-1">
+          <nav className="flex md:hidden items-center gap-1" aria-label="Мобильная навигация">
             {navLinks.map(({ to, icon: Icon }) => {
               const isActive = location.pathname === to
               const isFavorites = to === '/favorites'
 
+              const linkLabel = navLinks.find(l => l.to === to)?.label
               return (
-                <Link key={to} to={to}>
+                <Link key={to} to={to} aria-label={linkLabel}>
                   <Button
                     variant={isActive ? 'secondary' : 'ghost'}
                     size="icon"
                     className="h-9 w-9 relative"
+                    aria-label={linkLabel}
                   >
-                    <Icon className="h-4 w-4" />
+                    <Icon className="h-4 w-4" aria-hidden="true" />
                     {isFavorites && count > 0 && (
                       <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-primary text-[10px] font-medium text-primary-foreground flex items-center justify-center">
                         {count > 9 ? '9+' : count}
