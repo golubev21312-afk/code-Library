@@ -1,5 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useState } from 'react'
 import { LayoutGrid, Layers, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -8,12 +7,7 @@ import { SnippetsByLevel } from '@/components/snippets/SnippetsByLevel'
 import { LanguageIcon } from '@/components/common/LanguageIcon'
 import { AnimatedCard } from '@/components/animations/AnimatedCard'
 import { useFavorites } from '@/store/favoritesStore'
-import {
-  getSnippetsByCategory,
-  getCategories,
-  getSnippetsStats,
-  searchSnippets,
-} from '@/data/snippets'
+import { useSnippetFilters } from '@/hooks/useSnippetFilters'
 import type { SkillLevel } from '@/types'
 import { cn } from '@/lib/utils'
 
@@ -34,49 +28,20 @@ const levelLabels: Record<SkillLevel, string> = {
 type ViewMode = 'grid' | 'byLevel'
 
 export function SnippetsPage() {
-  const [searchParams, setSearchParams] = useSearchParams()
-  const [levelFilter, setLevelFilter] = useState<SkillLevel | 'all'>('all')
-  const [categoryFilter, setCategoryFilter] = useState<string | 'all'>('all')
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
-  const [searchQuery, setSearchQuery] = useState('')
-
   const { count: favoritesCount } = useFavorites()
 
-  const snippetsByCategory = useMemo(() => getSnippetsByCategory(), [])
-  const categories = useMemo(() => getCategories(), [])
-  const stats = useMemo(() => getSnippetsStats(), [])
-
-  // Read category from URL on mount
-  useEffect(() => {
-    const categoryFromUrl = searchParams.get('category')
-    if (categoryFromUrl && categories.includes(categoryFromUrl)) {
-      setCategoryFilter(categoryFromUrl)
-    }
-  }, [searchParams, categories])
-
-  // Update URL when category changes
-  const handleCategoryChange = (category: string | 'all') => {
-    setCategoryFilter(category)
-    if (category === 'all') {
-      searchParams.delete('category')
-    } else {
-      searchParams.set('category', category)
-    }
-    setSearchParams(searchParams)
-  }
-
-  // Get snippets based on search or filters
-  const snippetsToShow = useMemo(() => {
-    if (searchQuery.trim()) return searchSnippets(searchQuery)
-    if (categoryFilter === 'all') return Array.from(snippetsByCategory.values()).flat()
-    return snippetsByCategory.get(categoryFilter) ?? []
-  }, [searchQuery, categoryFilter, snippetsByCategory])
-
-  // Apply level filter
-  const filtered = useMemo(
-    () => levelFilter === 'all' ? snippetsToShow : snippetsToShow.filter((s) => s.level === levelFilter),
-    [snippetsToShow, levelFilter]
-  )
+  const {
+    searchQuery,
+    setSearchQuery,
+    levelFilter,
+    setLevelFilter,
+    categoryFilter,
+    handleCategoryChange,
+    categories,
+    stats,
+    filtered,
+  } = useSnippetFilters({ syncWithUrl: true })
 
   return (
     <div className="container py-6">

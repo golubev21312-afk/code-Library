@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
 import { cn } from '@/lib/utils'
+import { useScrollReveal } from '@/hooks/useScrollReveal'
 
 interface ScrollRevealProps {
   children: React.ReactNode
@@ -14,37 +14,7 @@ export function ScrollReveal({
   delay = 0,
   threshold = 0.1,
 }: ScrollRevealProps) {
-  const ref = useRef<HTMLDivElement>(null)
-  const [isVisible, setIsVisible] = useState(false)
-
-  useEffect(() => {
-    const prefersReducedMotion = window.matchMedia(
-      '(prefers-reduced-motion: reduce)'
-    ).matches
-
-    if (prefersReducedMotion) {
-      setIsVisible(true)
-      return
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setTimeout(() => {
-            setIsVisible(true)
-          }, delay)
-          observer.disconnect()
-        }
-      },
-      { threshold, rootMargin: '0px 0px -50px 0px' }
-    )
-
-    if (ref.current) {
-      observer.observe(ref.current)
-    }
-
-    return () => observer.disconnect()
-  }, [delay, threshold])
+  const { ref, isVisible } = useScrollReveal({ delay, threshold })
 
   return (
     <div

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { Heart, Trash2, ArrowRight, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { SnippetCard } from '@/components/snippets/SnippetCard'
 import { AnimatedCard } from '@/components/animations/AnimatedCard'
 import { useFavorites } from '@/store/favoritesStore'
+import { useFilteredSnippets } from '@/hooks/useSnippetFilters'
 import { getAllSnippets } from '@/data/snippets'
 import type { SkillLevel } from '@/types'
 
@@ -17,28 +18,19 @@ const levelLabels: Record<SkillLevel, string> = {
 
 export function FavoritesPage() {
   const { favoriteIds, clearFavorites, count } = useFavorites()
-  const [searchQuery, setSearchQuery] = useState('')
-  const [levelFilter, setLevelFilter] = useState<SkillLevel | 'all'>('all')
 
-  const allSnippets = getAllSnippets()
-  const favoriteSnippets = allSnippets.filter((s) => favoriteIds.includes(s.id))
+  const favoriteSnippets = useMemo(() => {
+    const allSnippets = getAllSnippets()
+    return allSnippets.filter((s) => favoriteIds.includes(s.id))
+  }, [favoriteIds])
 
-  // Apply filters
-  let filtered = favoriteSnippets
-
-  if (searchQuery.trim()) {
-    const q = searchQuery.toLowerCase()
-    filtered = filtered.filter(
-      (s) =>
-        s.title.toLowerCase().includes(q) ||
-        s.description.toLowerCase().includes(q) ||
-        s.tags.some((t) => t.toLowerCase().includes(q))
-    )
-  }
-
-  if (levelFilter !== 'all') {
-    filtered = filtered.filter((s) => s.level === levelFilter)
-  }
+  const {
+    searchQuery,
+    setSearchQuery,
+    levelFilter,
+    setLevelFilter,
+    filtered,
+  } = useFilteredSnippets(favoriteSnippets)
 
   const handleClearAll = () => {
     if (window.confirm('Очистить все избранное?')) {
