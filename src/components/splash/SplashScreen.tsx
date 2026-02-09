@@ -299,7 +299,7 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
   // Stable generated data
   const bgParticles = useMemo(() => generateBackgroundParticles(30), [])
   const iconSparks = useMemo(() => icons.map(() => generateSparks(6)), [])
-  const matrixColumns = useMemo(() => generateMatrixColumns(35), [])
+  const matrixColumns = useMemo(() => generateMatrixColumns(20), [])
   const explosionParticles = useMemo(() => generateExplosionParticles(50), [])
 
   // Progress bar + counter

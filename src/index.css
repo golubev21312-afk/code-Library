@@ -233,13 +233,12 @@
   inset: 0;
   pointer-events: none;
   z-index: 40;
-  mix-blend-mode: multiply;
   background: repeating-linear-gradient(
     0deg,
     transparent,
     transparent 3px,
-    rgba(0, 0, 0, 0.15) 3px,
-    rgba(0, 0, 0, 0.15) 4px
+    rgba(255, 255, 255, 0.015) 3px,
+    rgba(255, 255, 255, 0.015) 4px
   );
 }
 
@@ -264,7 +263,7 @@
   pointer-events: none;
   animation: splash-matrix-fall linear infinite;
   white-space: nowrap;
-  text-shadow: 0 0 8px rgba(0, 255, 0, 0.4);
+  will-change: transform;
 }
 
 .splash-matrix-head {
@@ -351,7 +350,7 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: text-shimmer 3s linear infinite;
-  filter: drop-shadow(0 0 30px rgba(88, 166, 255, 0.3));
+  text-shadow: none;
 }
 
 .splash-title-line {
@@ -402,12 +401,12 @@
 /* === Glitch effect === */
 @keyframes splash-glitch {
   0% { transform: translate(0); }
-  15% { transform: translate(-3px, 2px); filter: hue-rotate(90deg); clip-path: inset(30% 0 40% 0); }
-  30% { transform: translate(3px, -1px); clip-path: inset(50% 0 20% 0); }
-  45% { transform: translate(-2px, -2px); filter: hue-rotate(-90deg); clip-path: inset(10% 0 60% 0); }
-  60% { transform: translate(2px, 1px); clip-path: inset(40% 0 30% 0); }
-  75% { transform: translate(-1px, 0); filter: hue-rotate(45deg); }
-  100% { transform: translate(0); filter: none; clip-path: none; }
+  15% { transform: translate(-2px, 1px); filter: hue-rotate(60deg); }
+  30% { transform: translate(2px, -1px); }
+  45% { transform: translate(-1px, -1px); filter: hue-rotate(-60deg); }
+  60% { transform: translate(1px, 1px); }
+  75% { transform: translate(-1px, 0); filter: hue-rotate(30deg); }
+  100% { transform: translate(0); filter: none; }
 }
 
 .splash-glitch {
