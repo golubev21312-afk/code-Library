@@ -321,6 +321,7 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
   const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 })
 
   const audioCtxRef = useRef<AudioContext | null>(null)
+  const musicRef = useRef<HTMLAudioElement | null>(null)
   const startTimeRef = useRef(Date.now())
   const konamiIndexRef = useRef(0)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -367,14 +368,91 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
 
   // Initialize audio on any user interaction
   useEffect(() => {
-    const initAudio = () => ensureAudioContext(audioCtxRef)
+    const initAudio = () => {
+      ensureAudioContext(audioCtxRef)
+      // Start music on first interaction if not muted
+      if (musicRef.current && musicRef.current.paused && !muted) {
+        musicRef.current.play().catch(() => {})
+      }
+    }
     window.addEventListener('click', initAudio, { once: true })
     window.addEventListener('keydown', initAudio, { once: true })
     return () => {
       window.removeEventListener('click', initAudio)
       window.removeEventListener('keydown', initAudio)
     }
+  }, [muted])
+
+  // Background music setup
+  useEffect(() => {
+    let audio: HTMLAudioElement | null = null
+    try {
+      // Place your mp3 at public/splash-music.mp3
+      audio = new Audio('/splash-music.mp3')
+      audio.loop = true
+      audio.volume = 0
+      musicRef.current = audio
+
+      // Fade in over 2s
+      const fadeIn = () => {
+        let vol = 0
+        const step = setInterval(() => {
+          vol = Math.min(vol + 0.02, 0.4)
+          if (audio) audio.volume = vol
+          if (vol >= 0.4) clearInterval(step)
+        }, 50)
+      }
+
+      // Try autoplay, fallback to user interaction
+      audio.play().then(fadeIn).catch(() => {
+        // Will be started on first user interaction
+        const startOnInteraction = () => {
+          audio?.play().then(fadeIn).catch(() => {})
+        }
+        window.addEventListener('click', startOnInteraction, { once: true })
+      })
+    } catch {
+      // Music file not found — that's fine, splash works without it
+    }
+
+    return () => {
+      // Fade out and cleanup
+      if (audio) {
+        let vol = audio.volume
+        const fadeOut = setInterval(() => {
+          vol = Math.max(vol - 0.05, 0)
+          audio!.volume = vol
+          if (vol <= 0) {
+            clearInterval(fadeOut)
+            audio!.pause()
+            audio!.src = ''
+          }
+        }, 30)
+      }
+      musicRef.current = null
+    }
   }, [])
+
+  // Sync mute state to music
+  useEffect(() => {
+    if (musicRef.current) {
+      if (muted) {
+        musicRef.current.volume = 0
+      } else {
+        // Restore volume with fade
+        let vol = musicRef.current.volume
+        const fade = setInterval(() => {
+          vol = Math.min(vol + 0.02, 0.4)
+          if (musicRef.current) musicRef.current.volume = vol
+          if (vol >= 0.4) clearInterval(fade)
+        }, 30)
+        // Also try playing if paused
+        if (musicRef.current.paused) {
+          musicRef.current.play().catch(() => {})
+        }
+      }
+    }
+  }, [muted])
 
   // Skip handler
   const handleSkip = useCallback(() => {

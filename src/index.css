@@ -312,15 +312,26 @@
   animation: splash-icons-gather 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
-/* === Editor / cursor === */
-@keyframes splash-editor-in {
-  0% { opacity: 0; transform: translateY(30px) scale(0.95); }
-  100% { opacity: 1; transform: translateY(0) scale(1); }
+/* === Sparks === */
+@keyframes splash-spark-burst {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(var(--spark-angle)) translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(var(--spark-angle)) translateY(calc(-1 * var(--spark-distance))) scale(0);
+  }
 }
 
-@keyframes splash-cursor-blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0; }
+.splash-spark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 50%;
+  z-index: 5;
+  animation: splash-spark-burst ease-out forwards;
+  box-shadow: 0 0 6px 2px currentColor;
 }
 
 /* === Title phase === */
@@ -378,6 +389,16 @@
 }
 
 /* === Editor / cursor === */
+@keyframes splash-editor-in {
+  0% { opacity: 0; transform: translateY(30px) scale(0.95); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes splash-cursor-blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
 .splash-editor-in {
   animation: splash-editor-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -386,16 +407,6 @@
   animation: splash-cursor-blink 0.8s step-end infinite;
   color: #58a6ff;
   font-weight: bold;
-}
-
-/* === Fade out === */
-@keyframes splash-fadeout {
-  0% { opacity: 1; transform: scale(1); }
-  100% { opacity: 0; transform: scale(1.1); }
-}
-
-.splash-phase-fadeout {
-  animation: splash-fadeout 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 /* === Glitch effect === */
@@ -434,45 +445,14 @@
   animation: splash-explosion-burst ease-out forwards;
 }
 
-/* === Konami easter egg === */
-@keyframes splash-konami-badge-in {
-  0% { opacity: 0; transform: translateX(-50%) translateY(-20px) scale(0.8); }
-  100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+/* === Fade out === */
+@keyframes splash-fadeout {
+  0% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.1); }
 }
 
-@keyframes splash-konami-rainbow {
-  0% { filter: hue-rotate(0deg); }
-  100% { filter: hue-rotate(360deg); }
-}
-
-.splash-konami-badge {
-  animation: splash-konami-badge-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.splash-konami-rainbow {
-  animation: splash-konami-rainbow 1s linear infinite;
-}
-
-/* === Sparks === */
-@keyframes splash-spark-burst {
-  0% {
-    opacity: 1;
-    transform: translate(-50%, -50%) rotate(var(--spark-angle)) translateY(0) scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -50%) rotate(var(--spark-angle)) translateY(calc(-1 * var(--spark-distance))) scale(0);
-  }
-}
-
-.splash-spark {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  border-radius: 50%;
-  z-index: 5;
-  animation: splash-spark-burst ease-out forwards;
-  box-shadow: 0 0 6px 2px currentColor;
+.splash-phase-fadeout {
+  animation: splash-fadeout 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 /* === Background particles === */
@@ -506,6 +486,25 @@
 .splash-skip-hint {
   opacity: 0;
   animation: splash-skip-fade-in 0.5s ease 1.5s forwards;
+}
+
+/* === Konami easter egg === */
+@keyframes splash-konami-badge-in {
+  0% { opacity: 0; transform: translateX(-50%) translateY(-20px) scale(0.8); }
+  100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+}
+
+@keyframes splash-konami-rainbow {
+  0% { filter: hue-rotate(0deg); }
+  100% { filter: hue-rotate(360deg); }
+}
+
+.splash-konami-badge {
+  animation: splash-konami-badge-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.splash-konami-rainbow {
+  animation: splash-konami-rainbow 1s linear infinite;
 }
 
 /* === Syntax highlighting === */
@@ -1131,5 +1130,46 @@
   .logo-break-container.breaking .logo-half-left,
   .logo-break-container.breaking .logo-half-right {
     animation: none;
+  }
+
+  .splash-icon-entry {
+    opacity: 1;
+    animation: none;
+  }
+  .splash-icon-glow,
+  .splash-icons-gather,
+  .splash-editor-in,
+  .splash-cursor,
+  .splash-title-in,
+  .splash-title-text,
+  .splash-title-line,
+  .splash-title-sub,
+  .splash-boot-line,
+  .splash-glitch,
+  .splash-konami-badge,
+  .splash-konami-rainbow {
+    animation: none;
+  }
+  .splash-phase-fadeout {
+    animation: none;
+    opacity: 0;
+  }
+  .splash-bg-particle,
+  .splash-spark,
+  .splash-matrix-column,
+  .splash-explosion-particle {
+    animation: none;
+    opacity: 0;
+  }
+  .splash-skip-hint {
+    animation: none;
+    opacity: 1;
+  }
+  .splash-title-line {
+    width: 120px;
+    opacity: 1;
+  }
+  .splash-title-sub {
+    opacity: 1;
   }
 }
