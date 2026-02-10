@@ -2,7 +2,7 @@ import type { Snippet } from '@/types'
 
 export const advancedUtilsSnippets: Snippet[] = [
   {
-    id: 'debounce-throttle',
+    id: 'debounce-throttle-advanced',
     title: 'Debounce / Throttle',
     description: 'Debounce откладывает вызов до паузы. Throttle ограничивает частоту вызовов. Основа оптимизации.',
     language: 'ts',
